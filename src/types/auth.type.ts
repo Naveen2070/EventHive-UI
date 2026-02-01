@@ -1,15 +1,17 @@
+import type { UserRole } from '@/types/enum.ts'
+
 export interface UserDTO {
   id: number
   username: string
   email: string
-  role: 'USER' | 'ORGANIZER' | 'ADMIN'
+  role: UserRole
 }
 
 export interface RegisterUserRequest {
   username: string
   email: string
   password: string
-  role: 'USER' | 'ORGANIZER'
+  role: UserRole
 }
 
 export interface LoginRequest {

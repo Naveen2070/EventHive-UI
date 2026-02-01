@@ -24,6 +24,7 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, token: null, isAuthenticated: false })
         const queryContext = getContext()
         queryContext.queryClient.clear()
+        window.location.replace('/login')
       },
     }),
     {
