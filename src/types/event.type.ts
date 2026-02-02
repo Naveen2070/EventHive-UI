@@ -1,3 +1,5 @@
+import type { EventStatus } from '@/types/enum.ts'
+
 export interface EventDTO {
   id: number
   title: string
@@ -20,4 +22,14 @@ export interface CreateEventRequest {
   location: string
   price: number
   totalSeats: number
+}
+
+export interface EventFilters {
+  title?: string
+  location?: string
+  minPrice?: number
+  maxPrice?: number
+  startDate?: string
+  endDate?: string
+  status?: EventStatus | string
 }

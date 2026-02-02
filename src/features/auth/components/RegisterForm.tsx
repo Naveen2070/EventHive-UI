@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
+import type { RegisterFormValues } from '@/features/auth/auth.schemas.ts'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,13 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-// Logic Imports
 import { useAuth } from '@/features/auth/hooks/useAuth.ts'
-import {
-  type RegisterFormValues,
-  registerSchema,
-} from '@/features/auth/auth.schemas.ts'
+import { registerSchema } from '@/features/auth/auth.schemas.ts'
 import { UserRole } from '@/types/enum.ts'
 
 export const RegisterForm = () => {
@@ -45,12 +41,10 @@ export const RegisterForm = () => {
   })
 
   const onSubmit = (data: RegisterFormValues) => {
-    // We strip confirmPassword before sending to API
     const { confirmPassword, ...requestData } = data
     registerUser(requestData)
   }
 
-  // Shared class for inputs to match the "Deep Blue" theme
   const inputStyles =
     'bg-slate-900/50 border-slate-800 focus-visible:ring-blue-500/50 text-slate-100 placeholder:text-slate-500'
 
@@ -132,7 +126,7 @@ export const RegisterForm = () => {
                   </SelectContent>
                 </Select>
                 <FormDescription className="text-slate-500 text-xs">
-                  Organizers can create events; Users can only book them.
+                  Organizers can create events; Attendees can only book them.
                 </FormDescription>
                 <FormMessage className="text-red-400" />
               </FormItem>
