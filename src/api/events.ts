@@ -7,7 +7,6 @@ import type {
 } from '@/types/event.type.ts'
 import type { PageResponse } from '@/types/common.type.ts'
 
-
 export const eventsApi = {
   // Public Feed with Full Filtering
   getAll: async (page = 0, size = 10, filters?: EventFilters) => {
@@ -35,8 +34,18 @@ export const eventsApi = {
     return response.data
   },
 
+  getById: async (id: number) => {
+    const response = await api.get<EventDTO>(`/events/${id}`)
+    return response.data
+  },
+
   create: async (data: CreateEventRequest) => {
     const response = await api.post<EventDTO>('/events', data)
+    return response.data
+  },
+
+  update: async (id: number, data: CreateEventRequest) => {
+    const response = await api.put<EventDTO>(`/events/${id}`, data)
     return response.data
   },
 

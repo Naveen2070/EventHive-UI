@@ -6,7 +6,6 @@ import type {
   UserDTO,
 } from '@/types/auth.type.ts'
 
-
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/login', credentials)

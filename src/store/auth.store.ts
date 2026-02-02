@@ -8,6 +8,7 @@ interface AuthState {
   token: string | null
   isAuthenticated: boolean
   setAuth: (user: UserDTO, token: string) => void
+  clearAuth: () => void
   logout: () => void
 }
 
@@ -19,12 +20,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
-
+      clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
       logout: () => {
         set({ user: null, token: null, isAuthenticated: false })
         const queryContext = getContext()
         queryContext.queryClient.clear()
-        window.location.replace('/login')
       },
     }),
     {

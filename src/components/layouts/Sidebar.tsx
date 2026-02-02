@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import {
   CalendarDays,
   Hexagon,
@@ -24,6 +24,12 @@ const navItems = [
 export const Sidebar = () => {
   const pathname = useLocation({ select: (location) => location.pathname })
   const logout = useAuthStore((state) => state.logout)
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    logout()
+    await navigate({ to: '/login', replace: true })
+  }
 
   return (
     <aside className="hidden h-screen w-64 flex-col border-r border-slate-800 bg-slate-950 text-slate-100 lg:flex fixed left-0 top-0">
@@ -64,7 +70,7 @@ export const Sidebar = () => {
         <Button
           variant="ghost"
           className="w-full justify-start gap-2 text-slate-400 hover:text-red-400 hover:bg-red-950/30"
-          onClick={() => logout()}
+          onClick={() => handleLogout()}
         >
           <LogOut className="h-4 w-4" />
           Sign Out

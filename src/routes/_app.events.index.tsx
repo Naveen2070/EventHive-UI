@@ -14,14 +14,13 @@ import { UserRole } from '@/types/enum'
 import { eventKeys } from '@/features/events/events.keys.ts'
 import { PaginationBar } from '@/components/common/pagination-bar.tsx'
 
-export const Route = createFileRoute('/_app/events')({
+export const Route = createFileRoute('/_app/events/')({
   component: EventsPage,
 
   loader: async ({ context }) => {
     const { queryClient } = context
     const { user } = useAuthStore.getState()
-    const isOrganizer =
-      user?.role === UserRole.ORGANIZER 
+    const isOrganizer = user?.role === UserRole.ORGANIZER
 
     const promises = []
 

@@ -10,6 +10,7 @@ import type { UserRole } from '@/types/enum.ts'
 export const useAuth = () => {
   const navigate = useNavigate()
   const setAuth = useAuthStore((state) => state.setAuth)
+  const clearAuth = useAuthStore((s) => s.clearAuth)
 
   // 1. Login Mutation
   const loginMutation = useMutation({
@@ -29,7 +30,7 @@ export const useAuth = () => {
 
       // 2. Construct User
       const user = {
-        id: 0,
+        id: 1,
         username: decoded.sub,
         email: decoded.sub,
         role: primaryRole as UserRole,
@@ -40,8 +41,11 @@ export const useAuth = () => {
       await navigate({ to: '/' })
     },
     onError: (error: any) => {
-      const msg = error.response?.data?.message || 'Login failed. Please check your credentials.';
-      toast.error(msg);
+      clearAuth()
+      const msg =
+        error.response?.data?.message ||
+        'Login failed. Please check your credentials.'
+      toast.error(msg)
     },
   })
 

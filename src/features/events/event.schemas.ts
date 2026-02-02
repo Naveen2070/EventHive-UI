@@ -15,6 +15,8 @@ export const createEventSchema = z
       message: 'Start date must be in the future',
     }),
     endDate: z.string(),
+    organizerEmail: z.email(),
+    createdBy: z.string(),
   })
   .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     message: 'End date must be after start date',

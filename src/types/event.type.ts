@@ -11,7 +11,9 @@ export interface EventDTO {
   totalSeats: number
   availableSeats: number
   status: 'DRAFT' | 'PUBLISHED' | 'CANCELLED' | 'COMPLETED'
+  organizerId: number
   organizerName: string
+  createdAt: string
 }
 
 export interface CreateEventRequest {

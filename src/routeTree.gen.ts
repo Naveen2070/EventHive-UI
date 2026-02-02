@@ -14,7 +14,9 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
-import { Route as AppEventsRouteImport } from './routes/_app.events'
+import { Route as AppEventsIndexRouteImport } from './routes/_app.events.index'
+import { Route as AppEventsCreateRouteImport } from './routes/_app.events.create'
+import { Route as AppEventsEventIdEditRouteImport } from './routes/_app.events.$eventId.edit'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -39,46 +41,76 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
-const AppEventsRoute = AppEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
+const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEventsCreateRoute = AppEventsCreateRouteImport.update({
+  id: '/events/create',
+  path: '/events/create',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEventsEventIdEditRoute = AppEventsEventIdEditRouteImport.update({
+  id: '/events/$eventId/edit',
+  path: '/events/$eventId/edit',
   getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/events': typeof AppEventsRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/events/create': typeof AppEventsCreateRoute
+  '/events/': typeof AppEventsIndexRoute
+  '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/events': typeof AppEventsRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
+  '/events/create': typeof AppEventsCreateRoute
+  '/events': typeof AppEventsIndexRoute
+  '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
-  '/_app/events': typeof AppEventsRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/events/create': typeof AppEventsCreateRoute
+  '/_app/events/': typeof AppEventsIndexRoute
+  '/_app/events/$eventId/edit': typeof AppEventsEventIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/events' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/events/create'
+    | '/events/'
+    | '/events/$eventId/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/events' | '/login' | '/register'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/events/create'
+    | '/events'
+    | '/events/$eventId/edit'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
-    | '/_app/events'
     | '/_auth/login'
     | '/_auth/register'
     | '/_app/'
+    | '/_app/events/create'
+    | '/_app/events/'
+    | '/_app/events/$eventId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -123,24 +155,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_app/events': {
-      id: '/_app/events'
+    '/_app/events/': {
+      id: '/_app/events/'
       path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof AppEventsRouteImport
+      fullPath: '/events/'
+      preLoaderRoute: typeof AppEventsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/events/create': {
+      id: '/_app/events/create'
+      path: '/events/create'
+      fullPath: '/events/create'
+      preLoaderRoute: typeof AppEventsCreateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/events/$eventId/edit': {
+      id: '/_app/events/$eventId/edit'
+      path: '/events/$eventId/edit'
+      fullPath: '/events/$eventId/edit'
+      preLoaderRoute: typeof AppEventsEventIdEditRouteImport
       parentRoute: typeof AppRoute
     }
   }
 }
 
 interface AppRouteChildren {
-  AppEventsRoute: typeof AppEventsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppEventsCreateRoute: typeof AppEventsCreateRoute
+  AppEventsIndexRoute: typeof AppEventsIndexRoute
+  AppEventsEventIdEditRoute: typeof AppEventsEventIdEditRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppEventsRoute: AppEventsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppEventsCreateRoute: AppEventsCreateRoute,
+  AppEventsIndexRoute: AppEventsIndexRoute,
+  AppEventsEventIdEditRoute: AppEventsEventIdEditRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

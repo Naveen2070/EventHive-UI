@@ -17,7 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip.tsx'
-
+import { Link } from '@tanstack/react-router'
 
 interface EventCardProps {
   event: EventDTO
@@ -134,13 +134,19 @@ export const EventCard = ({ event, isOwner }: EventCardProps) => {
       <CardFooter className="p-5 pt-0 gap-2">
         {isOwner || isAdmin ? (
           <>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 border-slate-700 hover:bg-slate-800 text-slate-300"
+            <Link
+              to="/events/$eventId/edit"
+              params={{ eventId: event.id.toString() }}
+              className="flex flex-1"
             >
-              <Edit className="h-3.5 w-3.5 mr-2" /> Manage
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 border-slate-700 hover:bg-slate-800 text-slate-300"
+              >
+                <Edit className="h-3.5 w-3.5 mr-2" /> Manage
+              </Button>
+            </Link>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>

@@ -21,8 +21,7 @@ export const EventHeader = ({ isOrganizer }: EventHeaderProps) => {
       </div>
 
       {isOrganizer && (
-        // <Link to="/events/create">
-          <Link to="/">
+        <Link to="/events/create">
           <Button className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-lg shadow-blue-900/20">
             <Plus className="h-4 w-4" /> Create Event
           </Button>

@@ -3,9 +3,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, DollarSign, Loader2, MapPin, Users } from 'lucide-react'
 
-import {  createEventSchema } from '../event.schemas'
-import type { z } from 'zod'
-import type {CreateEventValues} from '../event.schemas';
+import type { CreateEventValues } from '../event.schemas'
+import { createEventSchema } from '../event.schemas'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -19,19 +18,26 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
-
 interface CreateEventFormProps {
   onSubmit: (data: CreateEventValues) => void
   isPending: boolean
+  organizerEmail: string
+  createdBy: string
+  initialData?: CreateEventValues
 }
 
 export const CreateEventForm = ({
   onSubmit,
   isPending,
+  organizerEmail,
+  createdBy,
+  initialData,
 }: CreateEventFormProps) => {
-  const form = useForm<z.input<typeof createEventSchema>>({
-    resolver: zodResolver(createEventSchema),
-    defaultValues: {
+  const isEditMode = !!initialData
+
+  const form = useForm<CreateEventValues>({
+    resolver: zodResolver(createEventSchema as any),
+    defaultValues: initialData || {
       title: '',
       description: '',
       location: '',
@@ -39,6 +45,8 @@ export const CreateEventForm = ({
       totalSeats: 100,
       startDate: '',
       endDate: '',
+      organizerEmail,
+      createdBy,
     },
   })
 
@@ -215,8 +223,10 @@ export const CreateEventForm = ({
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {isEditMode ? 'Updating...' : 'Creating...'}
                 </>
+              ) : isEditMode ? (
+                'Update Event'
               ) : (
                 'Create Event'
               )}

@@ -1,12 +1,15 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { Sidebar } from '@/components/layouts/Sidebar'
 import { useAuthStore } from '@/store/auth.store'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/_app')({
   component: AppLayout,
   beforeLoad: ({ location }) => {
+    const path = location.pathname
     const { isAuthenticated } = useAuthStore.getState()
-    if (!isAuthenticated) {
+    if (!isAuthenticated && path !== '/login' && path !== '/register') {
+      toast.error('You are not authenticated')
       throw redirect({
         to: '/login',
         search: {
