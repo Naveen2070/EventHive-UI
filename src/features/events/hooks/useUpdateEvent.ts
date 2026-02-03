@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import type { CreateEventValues } from '../event.schemas'
 import { eventsApi } from '@/api/events'
 import { eventKeys } from '@/features/events/events.keys'
-import type { CreateEventValues } from '../event.schemas'
-import { toast } from 'sonner'
 
 export const useUpdateEvent = (eventId: number) => {
   const queryClient = useQueryClient()

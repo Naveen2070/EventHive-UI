@@ -2,10 +2,10 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { LoginRequest, RegisterUserRequest } from '@/types/auth.type.ts'
+import type { UserRole } from '@/types/enum.ts'
 import { useAuthStore } from '@/store/auth.store.ts'
 import { authApi } from '@/api/auth.ts'
 import { parseJwt } from '@/lib/jwt.ts'
-import type { UserRole } from '@/types/enum.ts'
 
 export const useAuth = () => {
   const navigate = useNavigate()
@@ -30,9 +30,9 @@ export const useAuth = () => {
 
       // 2. Construct User
       const user = {
-        id: 1,
-        username: decoded.sub,
-        email: decoded.sub,
+        id: decoded.id,
+        username: decoded.username,
+        email: decoded.email,
         role: primaryRole as UserRole,
       }
 

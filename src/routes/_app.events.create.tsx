@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 
+import type { CreateEventValues } from '@/features/events/event.schemas'
 import { useCreateEvent } from '@/features/events/hooks/useCreateEvent'
 import { CreateEventForm } from '@/features/events/components/CreateEventForm'
-import type { CreateEventValues } from '@/features/events/event.schemas'
 import { useAuthStore } from '@/store/auth.store.ts'
 
 export const Route = createFileRoute('/_app/events/create')({

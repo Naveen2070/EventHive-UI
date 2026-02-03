@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, DollarSign, Loader2, MapPin, Users } from 'lucide-react'
 
-import type { CreateEventValues } from '../event.schemas'
 import { createEventSchema } from '../event.schemas'
+import type { CreateEventValues } from '../event.schemas'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -87,7 +87,7 @@ export const CreateEventForm = ({
                 <FormControl>
                   <Textarea
                     placeholder="Tell people what this event is about..."
-                    className={`${inputStyles} min-h-[120px] resize-none`}
+                    className={`${inputStyles} min-h-30 resize-none`}
                     {...field}
                   />
                 </FormControl>
@@ -218,7 +218,7 @@ export const CreateEventForm = ({
             <Button
               type="submit"
               disabled={isPending}
-              className="bg-blue-600 hover:bg-blue-500 text-white min-w-[140px] shadow-lg shadow-blue-900/20"
+              className="bg-blue-600 hover:bg-blue-500 text-white min-w-35 shadow-lg shadow-blue-900/20"
             >
               {isPending ? (
                 <>

@@ -1,12 +1,13 @@
-import { createFileRoute, Link, useParams } from '@tanstack/react-router'
+import { Link, createFileRoute, useParams } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
+import type { CreateEventValues } from '@/features/events/event.schemas'
 import { eventsApi } from '@/api/events'
 import { eventKeys } from '@/features/events/events.keys'
 import { CreateEventForm } from '@/features/events/components/CreateEventForm'
 import { useUpdateEvent } from '@/features/events/hooks/useUpdateEvent'
-import type { CreateEventValues } from '@/features/events/event.schemas'
+import { EventStatusCard } from '@/features/events/components/EventStatusCard.tsx'
 
 export const Route = createFileRoute('/_app/events/$eventId/edit')({
   component: EditEventPage,
@@ -79,7 +80,7 @@ function EditEventPage() {
         </h1>
         <p className="text-slate-400">Update the details of your event.</p>
       </div>
-
+      <EventStatusCard eventId={event.id} currentStatus={event.status} />
       <CreateEventForm
         onSubmit={handleSubmit}
         isPending={isSaving}

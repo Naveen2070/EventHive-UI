@@ -15,7 +15,9 @@ import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AppEventsIndexRouteImport } from './routes/_app.events.index'
+import { Route as AppBookingsIndexRouteImport } from './routes/_app.bookings.index'
 import { Route as AppEventsCreateRouteImport } from './routes/_app.events.create'
+import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app.events.$eventId.index'
 import { Route as AppEventsEventIdEditRouteImport } from './routes/_app.events.$eventId.edit'
 
 const AuthRoute = AuthRouteImport.update({
@@ -46,9 +48,19 @@ const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
   path: '/events/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBookingsIndexRoute = AppBookingsIndexRouteImport.update({
+  id: '/bookings/',
+  path: '/bookings/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEventsCreateRoute = AppEventsCreateRouteImport.update({
   id: '/events/create',
   path: '/events/create',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEventsEventIdIndexRoute = AppEventsEventIdIndexRouteImport.update({
+  id: '/events/$eventId/',
+  path: '/events/$eventId/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppEventsEventIdEditRoute = AppEventsEventIdEditRouteImport.update({
@@ -62,16 +74,20 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
+  '/bookings/': typeof AppBookingsIndexRoute
   '/events/': typeof AppEventsIndexRoute
   '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
+  '/events/$eventId/': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
+  '/bookings': typeof AppBookingsIndexRoute
   '/events': typeof AppEventsIndexRoute
   '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
+  '/events/$eventId': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -81,8 +97,10 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/': typeof AppIndexRoute
   '/_app/events/create': typeof AppEventsCreateRoute
+  '/_app/bookings/': typeof AppBookingsIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
   '/_app/events/$eventId/edit': typeof AppEventsEventIdEditRoute
+  '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,16 +109,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/events/create'
+    | '/bookings/'
     | '/events/'
     | '/events/$eventId/edit'
+    | '/events/$eventId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/register'
     | '/events/create'
+    | '/bookings'
     | '/events'
     | '/events/$eventId/edit'
+    | '/events/$eventId'
   id:
     | '__root__'
     | '/_app'
@@ -109,8 +131,10 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_app/'
     | '/_app/events/create'
+    | '/_app/bookings/'
     | '/_app/events/'
     | '/_app/events/$eventId/edit'
+    | '/_app/events/$eventId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -162,11 +186,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEventsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/bookings/': {
+      id: '/_app/bookings/'
+      path: '/bookings'
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof AppBookingsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/events/create': {
       id: '/_app/events/create'
       path: '/events/create'
       fullPath: '/events/create'
       preLoaderRoute: typeof AppEventsCreateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/events/$eventId/': {
+      id: '/_app/events/$eventId/'
+      path: '/events/$eventId'
+      fullPath: '/events/$eventId/'
+      preLoaderRoute: typeof AppEventsEventIdIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/events/$eventId/edit': {
@@ -182,15 +220,19 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppEventsCreateRoute: typeof AppEventsCreateRoute
+  AppBookingsIndexRoute: typeof AppBookingsIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
   AppEventsEventIdEditRoute: typeof AppEventsEventIdEditRoute
+  AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppEventsCreateRoute: AppEventsCreateRoute,
+  AppBookingsIndexRoute: AppBookingsIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,
   AppEventsEventIdEditRoute: AppEventsEventIdEditRoute,
+  AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

@@ -49,6 +49,11 @@ export const eventsApi = {
     return response.data
   },
 
+  updateStatus: async (id: number, status: string) => {
+    const response = await api.patch<EventDTO>(`/events/status/${id}`, { status })
+    return response.data
+  },
+
   delete: async (id: number) => {
     await api.delete(`/events/${id}`)
   },

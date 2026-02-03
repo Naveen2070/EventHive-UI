@@ -1,12 +1,17 @@
+import type { BookingStatus } from '@/types/enum.ts'
+
 export interface BookingDTO {
-  id: number
+  bookingId: number
   bookingReference: string
+  eventId: number
+  eventTitle: string
+  eventDescription: string
+  eventDate: string
+  eventLocation: string
   ticketsCount: number
   totalPrice: number
-  status: 'PENDING_PAYMENT' | 'CONFIRMED' | 'CANCELLED'
-  eventTitle: string
-  eventDate: string
-  bookingDate: string
+  status: BookingStatus
+  bookedAt: string
 }
 
 export interface CreateBookingRequest {
