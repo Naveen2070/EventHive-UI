@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { LoginRequest, RegisterUserRequest } from '@/types/auth.type.ts'
-import type { UserRole } from '@/types/enum.ts'
+import { UserRole } from '@/types/enum.ts'
 import { useAuthStore } from '@/store/auth.store.ts'
 import { authApi } from '@/api/auth.ts'
 import { parseJwt } from '@/lib/jwt.ts'
@@ -11,7 +11,7 @@ export const useAuth = () => {
   const navigate = useNavigate()
   const setAuth = useAuthStore((state) => state.setAuth)
   const clearAuth = useAuthStore((s) => s.clearAuth)
-
+  const search = useSearch({ strict: false })
   // 1. Login Mutation
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginRequest) => authApi.login(credentials),
@@ -38,7 +38,19 @@ export const useAuth = () => {
 
       setAuth(user, data.token)
       toast.success(`Welcome back, ${user.username}!`)
-      await navigate({ to: '/' })
+      const redirectUrl = search.redirect
+
+      if (redirectUrl) {
+        await navigate({ to: redirectUrl })
+        return
+      }
+
+      // 2. Role-Based Default Destinations
+      if (user.role === UserRole.ORGANIZER) {
+        await navigate({ to: '/dashboard' })
+      } else {
+        await navigate({ to: '/events' })
+      }
     },
     onError: (error: any) => {
       clearAuth()

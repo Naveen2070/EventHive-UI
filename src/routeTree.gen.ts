@@ -15,6 +15,7 @@ import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AuthRegisterRouteImport } from './routes/_auth.register'
 import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AppEventsIndexRouteImport } from './routes/_app.events.index'
+import { Route as AppDashboardIndexRouteImport } from './routes/_app.dashboard.index'
 import { Route as AppBookingsIndexRouteImport } from './routes/_app.bookings.index'
 import { Route as AppEventsCreateRouteImport } from './routes/_app.events.create'
 import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app.events.$eventId.index'
@@ -48,6 +49,11 @@ const AppEventsIndexRoute = AppEventsIndexRouteImport.update({
   path: '/events/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppBookingsIndexRoute = AppBookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
   '/bookings/': typeof AppBookingsIndexRoute
+  '/dashboard/': typeof AppDashboardIndexRoute
   '/events/': typeof AppEventsIndexRoute
   '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
   '/events/$eventId/': typeof AppEventsEventIdIndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
   '/bookings': typeof AppBookingsIndexRoute
+  '/dashboard': typeof AppDashboardIndexRoute
   '/events': typeof AppEventsIndexRoute
   '/events/$eventId/edit': typeof AppEventsEventIdEditRoute
   '/events/$eventId': typeof AppEventsEventIdIndexRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/events/create': typeof AppEventsCreateRoute
   '/_app/bookings/': typeof AppBookingsIndexRoute
+  '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
   '/_app/events/$eventId/edit': typeof AppEventsEventIdEditRoute
   '/_app/events/$eventId/': typeof AppEventsEventIdIndexRoute
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/events/create'
     | '/bookings/'
+    | '/dashboard/'
     | '/events/'
     | '/events/$eventId/edit'
     | '/events/$eventId/'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/events/create'
     | '/bookings'
+    | '/dashboard'
     | '/events'
     | '/events/$eventId/edit'
     | '/events/$eventId'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/events/create'
     | '/_app/bookings/'
+    | '/_app/dashboard/'
     | '/_app/events/'
     | '/_app/events/$eventId/edit'
     | '/_app/events/$eventId/'
@@ -186,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEventsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/dashboard/': {
+      id: '/_app/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AppDashboardIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/bookings/': {
       id: '/_app/bookings/'
       path: '/bookings'
@@ -221,6 +240,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppEventsCreateRoute: typeof AppEventsCreateRoute
   AppBookingsIndexRoute: typeof AppBookingsIndexRoute
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
   AppEventsEventIdEditRoute: typeof AppEventsEventIdEditRoute
   AppEventsEventIdIndexRoute: typeof AppEventsEventIdIndexRoute
@@ -230,6 +250,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppEventsCreateRoute: AppEventsCreateRoute,
   AppBookingsIndexRoute: AppBookingsIndexRoute,
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,
   AppEventsEventIdEditRoute: AppEventsEventIdEditRoute,
   AppEventsEventIdIndexRoute: AppEventsEventIdIndexRoute,
