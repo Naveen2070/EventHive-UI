@@ -7,11 +7,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { RevenueChartPoint } from '@/types/dashboard.type'
 import { format } from 'date-fns'
+import type { RevenueChartPoint } from '@/types/dashboard.type'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-export const RevenueChart = ({ data }: { data: RevenueChartPoint[] }) => {
+export const RevenueChart = ({ data }: { data: Array<RevenueChartPoint> }) => {
   return (
     <Card className="col-span-4 bg-slate-950 border-slate-800">
       <CardHeader>

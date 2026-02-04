@@ -3,22 +3,36 @@ export interface RevenueChartPoint {
   revenue: number
 }
 
+export interface RevenueTrendItem {
+  date: string
+  revenue: number
+}
+
 export interface RecentSale {
   id: number
   eventName: string
   customerName: string
-  customerEmail: string
   tickets: number
   amount: number
   date: string
-  status: 'CONFIRMED' | 'PENDING' | 'REFUNDED'
 }
 
 export interface DashboardStatsDTO {
+  // Revenue
   totalRevenue: number
+  revenueGrowthLastWeekPercent: number
+  revenueGrowthLastMonthPercent: number
+
+  // Tickets
   totalTicketsSold: number
+  pendingPaymentTickets: number
+  ticketsSoldLastWeek: number
+
+  // Events
   activeEvents: number
   totalEvents: number
-  revenueTrend: Array<RevenueChartPoint>
+
+  // Lists
+  revenueTrend: Array<RevenueTrendItem>
   recentSales: Array<RecentSale>
 }
