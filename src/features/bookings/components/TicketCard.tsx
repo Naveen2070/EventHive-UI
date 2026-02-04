@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { isPast as checkIsPast, format } from 'date-fns'
+import { format } from 'date-fns'
 import {
   ArrowRight,
   CalendarDays,
   Check,
+  Clock,
   Copy,
   History,
   MapPin,
@@ -14,6 +15,7 @@ import {
 import { toast } from 'sonner'
 
 import { TicketQRDialog } from './TicketQRDialog'
+import { ReceiptDialog } from './ReceiptDialog'
 import type { BookingDTO } from '@/types/booking.type'
 import { getBookingStatusStyles } from '@/features/bookings/utils/status.utils'
 import { Card } from '@/components/ui/card'
@@ -25,18 +27,36 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip.tsx'
+} from '@/components/ui/tooltip'
 
 interface TicketCardProps {
   booking: BookingDTO
 }
 
 export const TicketCard = ({ booking }: TicketCardProps) => {
-  const isExpired = checkIsPast(new Date(booking.eventDate))
   const [showQR, setShowQR] = useState(false)
+  const [showReceipt, setShowReceipt] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  // 1. Get Styles from Utility
+  // 1. Optimized Date Logic using useMemo
+  const { isExpired, isOngoing, dateDisplay } = useMemo(() => {
+    const now = new Date()
+    const startDate = new Date(booking.eventDate)
+    const endDate = new Date(booking.eventEndDate)
+
+    // Expired ONLY if now is after the END date
+    const isExpiredEvent = now > endDate
+
+    // Ongoing if we are between start and end
+    const isOngoingEvent = now >= startDate && now <= endDate
+
+    return {
+      isExpired: isExpiredEvent,
+      isOngoing: isOngoingEvent,
+      dateDisplay: format(startDate, 'PPP p'),
+    }
+  }, [booking.eventDate, booking.eventEndDate])
+
   const styles = getBookingStatusStyles(booking.status)
   const StatusIcon = styles.icon
 
@@ -74,11 +94,9 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
                     )}
                   </button>
                 </TooltipTrigger>
-
-                {/* The Full Reference on Hover */}
                 <TooltipContent className="bg-slate-900 border-slate-800 text-slate-200 font-mono text-xs">
                   <p>
-                    Ticket Ref:{' '}
+                    Ref:{' '}
                     <span className="text-white font-bold">
                       {booking.bookingReference}
                     </span>
@@ -108,10 +126,17 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
                 {booking.eventTitle}
               </h3>
             </Link>
+
+            {/* Status Indicators */}
             {isExpired && (
               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 block">
                 Event Ended
               </span>
+            )}
+            {isOngoing && (
+              <div className="flex items-center gap-2 mt-2 text-emerald-400 text-xs font-bold animate-pulse">
+                <Clock className="h-3 w-3" /> HAPPENING NOW
+              </div>
             )}
           </div>
 
@@ -120,7 +145,7 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
               <div className="p-1.5 bg-slate-900 rounded-md">
                 <CalendarDays className="h-4 w-4 text-blue-500" />
               </div>
-              <span>{format(new Date(booking.eventDate), 'PPP p')}</span>
+              <span>{dateDisplay}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 bg-slate-900 rounded-md">
@@ -163,17 +188,22 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
             {isExpired ? (
               <Button
                 variant="ghost"
-                disabled
-                className="w-full justify-start text-slate-500 hover:text-slate-500 hover:bg-transparent pl-0"
+                onClick={() => setShowReceipt(true)}
+                className="w-full justify-start text-slate-500 hover:text-white hover:bg-slate-800 pl-0 transition-colors"
               >
                 <History className="h-4 w-4 mr-2" /> View Receipt
               </Button>
             ) : booking.status === BookingStatus.CONFIRMED ? (
               <Button
                 onClick={() => setShowQR(true)}
-                className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold shadow-lg shadow-blue-900/10"
+                className={`w-full font-semibold shadow-lg transition-all ${
+                  isOngoing
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/20'
+                    : 'bg-slate-100 hover:bg-white text-slate-900 shadow-blue-900/10'
+                }`}
               >
-                <QrCode className="h-4 w-4 mr-2" /> View Ticket
+                <QrCode className="h-4 w-4 mr-2" />{' '}
+                {isOngoing ? 'Scan Now' : 'View Ticket'}
               </Button>
             ) : booking.status === BookingStatus.PENDING ? (
               <Button className="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold shadow-lg shadow-amber-900/20">
@@ -196,6 +226,11 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
         booking={booking}
         isOpen={showQR}
         onOpenChange={setShowQR}
+      />
+      <ReceiptDialog
+        booking={booking}
+        isOpen={showReceipt}
+        onOpenChange={setShowReceipt}
       />
     </>
   )

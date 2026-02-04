@@ -17,6 +17,7 @@ import { Route as AuthLoginRouteImport } from './routes/_auth.login'
 import { Route as AppEventsIndexRouteImport } from './routes/_app.events.index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app.dashboard.index'
 import { Route as AppBookingsIndexRouteImport } from './routes/_app.bookings.index'
+import { Route as AppOrganizerScanRouteImport } from './routes/_app.organizer.scan'
 import { Route as AppEventsCreateRouteImport } from './routes/_app.events.create'
 import { Route as AppEventsEventIdIndexRouteImport } from './routes/_app.events.$eventId.index'
 import { Route as AppEventsEventIdEditRouteImport } from './routes/_app.events.$eventId.edit'
@@ -59,6 +60,11 @@ const AppBookingsIndexRoute = AppBookingsIndexRouteImport.update({
   path: '/bookings/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrganizerScanRoute = AppOrganizerScanRouteImport.update({
+  id: '/organizer/scan',
+  path: '/organizer/scan',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEventsCreateRoute = AppEventsCreateRouteImport.update({
   id: '/events/create',
   path: '/events/create',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
+  '/organizer/scan': typeof AppOrganizerScanRoute
   '/bookings/': typeof AppBookingsIndexRoute
   '/dashboard/': typeof AppDashboardIndexRoute
   '/events/': typeof AppEventsIndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/events/create': typeof AppEventsCreateRoute
+  '/organizer/scan': typeof AppOrganizerScanRoute
   '/bookings': typeof AppBookingsIndexRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/events': typeof AppEventsIndexRoute
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_app/events/create': typeof AppEventsCreateRoute
+  '/_app/organizer/scan': typeof AppOrganizerScanRoute
   '/_app/bookings/': typeof AppBookingsIndexRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/events/': typeof AppEventsIndexRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/events/create'
+    | '/organizer/scan'
     | '/bookings/'
     | '/dashboard/'
     | '/events/'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/events/create'
+    | '/organizer/scan'
     | '/bookings'
     | '/dashboard'
     | '/events'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/register'
     | '/_app/events/create'
+    | '/_app/organizer/scan'
     | '/_app/bookings/'
     | '/_app/dashboard/'
     | '/_app/events/'
@@ -213,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBookingsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/organizer/scan': {
+      id: '/_app/organizer/scan'
+      path: '/organizer/scan'
+      fullPath: '/organizer/scan'
+      preLoaderRoute: typeof AppOrganizerScanRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/events/create': {
       id: '/_app/events/create'
       path: '/events/create'
@@ -239,6 +258,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppEventsCreateRoute: typeof AppEventsCreateRoute
+  AppOrganizerScanRoute: typeof AppOrganizerScanRoute
   AppBookingsIndexRoute: typeof AppBookingsIndexRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppEventsIndexRoute: typeof AppEventsIndexRoute
@@ -248,6 +268,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppEventsCreateRoute: AppEventsCreateRoute,
+  AppOrganizerScanRoute: AppOrganizerScanRoute,
   AppBookingsIndexRoute: AppBookingsIndexRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppEventsIndexRoute: AppEventsIndexRoute,

@@ -7,6 +7,7 @@ export interface BookingDTO {
   eventTitle: string
   eventDescription: string
   eventDate: string
+  eventEndDate: string
   eventLocation: string
   ticketsCount: number
   totalPrice: number

@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Calendar, History, Search, Ticket } from 'lucide-react'
-import { isPast } from 'date-fns'
-
 
 import { useMyBookings } from '@/features/bookings/hooks/useMyBookings'
 import { TicketCard } from '@/features/bookings/components/TicketCard'
@@ -32,11 +30,12 @@ function MyBookingsPage() {
 
   if (!bookings || bookings.length === 0) return <EmptyState />
 
-  // Filter Logic
+  const now = new Date()
+
   const upcomingBookings = bookings.filter(
-    (b) => !isPast(new Date(b.eventDate)),
+    (b) => new Date(b.eventEndDate) >= now,
   )
-  const pastBookings = bookings.filter((b) => isPast(new Date(b.eventDate)))
+  const pastBookings = bookings.filter((b) => new Date(b.eventEndDate) < now)
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

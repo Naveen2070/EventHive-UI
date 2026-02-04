@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Download } from 'lucide-react'
 import { DashboardStatsGrid } from '@/features/dashboard/components/DashboardStatsGrid'
 import { RevenueChart } from '@/features/dashboard/components/RevenueChart'
 import { RecentSales } from '@/features/dashboard/components/RecentSales'
 import { Button } from '@/components/ui/button'
-import { Download } from 'lucide-react'
 import { useDashboardStats } from '@/features/dashboard/hooks/useDashboardStats.ts'
 import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkeleton.tsx'
 
@@ -29,13 +29,13 @@ function DashboardPage() {
         <h2 className="text-3xl font-bold tracking-tight text-white">
           Dashboard
         </h2>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <Button
             variant="outline"
             className="border-slate-800 text-slate-300 hover:bg-slate-900"
           >
-            <Download className="mr-2 h-4 w-4" />
-            Download Report
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Download Report</span>
           </Button>
         </div>
       </div>

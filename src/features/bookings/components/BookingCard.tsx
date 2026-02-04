@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { AlertCircle, Loader2, Minus, Plus } from 'lucide-react'
+import { AlertCircle, Clock, Loader2, Minus, Plus } from 'lucide-react'
+import { format } from 'date-fns'
 import { useCreateBooking } from '../hooks/useCreateBooking'
 import type { EventDTO } from '@/types/event.type'
 import { useAuthStore } from '@/store/auth.store'
@@ -23,27 +24,47 @@ interface BookingCardProps {
 export const BookingCard = ({ event }: BookingCardProps) => {
   const { user } = useAuthStore()
   const isOwner = user?.id === event.organizerId
-
-  // State for Quantity
   const [quantity, setQuantity] = useState(1)
   const maxTicketsPerOrder = 5
 
-  // Hook Integration
   const { mutate: bookTicket, isPending } = useCreateBooking(event.id)
 
-  // Logic
-  const isSoldOut = event.availableSeats === 0
-  const isPast = new Date(event.startDate) < new Date()
-  const percentageSold =
-    ((event.totalSeats - event.availableSeats) / event.totalSeats) * 100
+  // Optimize expensive calculations & Date parsing
+  const {
+    isPast,
+    isOngoing,
+    isSoldOut,
+    percentageSold,
+    formattedTime,
+    totalPrice,
+  } = useMemo(() => {
+    const now = new Date()
+    const startDate = new Date(event.startDate)
+    const endDate = new Date(event.endDate)
 
-  const totalPrice = event.price * quantity
+    const isPastEvent = endDate < now
+    const isOngoingEvent = startDate <= now && endDate >= now
+    const isSoldOutEvent = event.availableSeats === 0
+
+    // Math
+    const sold =
+      ((event.totalSeats - event.availableSeats) / event.totalSeats) * 100
+    const price = event.price * quantity
+
+    return {
+      isPast: isPastEvent,
+      isOngoing: isOngoingEvent,
+      isSoldOut: isSoldOutEvent,
+      percentageSold: sold,
+      totalPrice: price,
+      formattedTime: `${format(startDate, 'h:mm a')} - ${format(endDate, 'h:mm a')}`,
+    }
+  }, [event, quantity])
 
   const handleBook = () => {
-    bookTicket({ eventId: event.id, ticketsCount:quantity })
+    bookTicket({ eventId: event.id, ticketsCount: quantity })
   }
 
-  // Helper to adjust quantity safely
   const updateQuantity = (delta: number) => {
     setQuantity((prev) => {
       const next = prev + delta
@@ -55,7 +76,7 @@ export const BookingCard = ({ event }: BookingCardProps) => {
   }
 
   return (
-    <Card className="bg-slate-950 border-slate-800 shadow-xl shadow-black/40 overflow-hidden">
+    <Card className="bg-slate-950 border-slate-800 shadow-xl shadow-black/40 overflow-hidden flex flex-col h-full">
       <CardHeader className="pb-4 border-b border-slate-800 bg-slate-900/30">
         <CardTitle className="flex justify-between items-center">
           <span className="text-slate-400 font-medium text-sm">
@@ -67,7 +88,7 @@ export const BookingCard = ({ event }: BookingCardProps) => {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="pt-6 space-y-6">
+      <CardContent className="pt-6 space-y-6 flex-1">
         {/* Availability Meter */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-slate-400">
@@ -77,11 +98,13 @@ export const BookingCard = ({ event }: BookingCardProps) => {
           <Progress
             value={percentageSold}
             className="h-2 bg-slate-800"
-            indicatorClassName="bg-blue-500"
+            indicatorClassName={
+              percentageSold > 90 ? 'bg-red-500' : 'bg-blue-500'
+            }
           />
         </div>
 
-        {/* Quantity Selector (Only show if not sold out) */}
+        {/* Quantity Selector */}
         {!isSoldOut && !isPast && !isOwner && (
           <div className="flex items-center justify-between bg-slate-900 rounded-lg p-3 border border-slate-800">
             <span className="text-sm text-slate-300">Tickets</span>
@@ -121,22 +144,25 @@ export const BookingCard = ({ event }: BookingCardProps) => {
             <span>General Admission</span>
           </div>
           <Separator className="bg-slate-800" />
-          <div className="flex justify-between">
-            <span className="text-slate-500">Start Time</span>
-            <span>
-              {new Date(event.startDate).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
+          <div className="flex justify-between items-center">
+            <span className="text-slate-500">Duration</span>
+            <span className="font-medium text-slate-200">{formattedTime}</span>
           </div>
         </div>
 
-        {isSoldOut && (
+        {/* Status Messages */}
+        {isSoldOut ? (
           <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md flex items-center gap-2 text-red-400 text-sm">
             <AlertCircle className="h-4 w-4" />
             <span>This event is completely sold out.</span>
           </div>
+        ) : (
+          isOngoing && (
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-md flex items-center gap-2 text-emerald-400 text-sm animate-pulse">
+              <Clock className="h-4 w-4" />
+              <span>Happening right now! Gates open.</span>
+            </div>
+          )
         )}
       </CardContent>
 
