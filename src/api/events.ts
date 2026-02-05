@@ -4,6 +4,7 @@ import type {
   CreateEventRequest,
   EventDTO,
   EventFilters,
+  UpdateEventRequest,
 } from '@/types/event.type.ts'
 import type { PageResponse } from '@/types/common.type.ts'
 
@@ -44,7 +45,7 @@ export const eventsApi = {
     return response.data
   },
 
-  update: async (id: number, data: CreateEventRequest) => {
+  update: async (id: number, data: UpdateEventRequest) => {
     const response = await api.put<EventDTO>(`/events/${id}`, data)
     return response.data
   },
