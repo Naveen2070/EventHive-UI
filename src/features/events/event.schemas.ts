@@ -1,9 +1,14 @@
 import * as z from 'zod'
 
+// 1. Single Tier Validation
 export const ticketTierSchema = z.object({
   name: z.string().min(1, 'Tier Name is required'),
   price: z.coerce.number().min(0, 'Price cannot be negative'),
   totalAllocation: z.coerce.number().min(1, 'Must have at least 1 seat'),
+
+  enableCustomDates: z.boolean().default(false).optional(),
+  validFrom: z.string().optional(),
+  validUntil: z.string().optional(),
 })
 
 export const createEventSchema = z

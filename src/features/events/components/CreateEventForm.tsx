@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Loader2, MapPin } from 'lucide-react'
 
+import type { CreateEventValues } from '../event.schemas'
 import { createEventSchema } from '../event.schemas'
 import { TicketTiersField } from './TicketTiersField'
-import type { CreateEventValues } from '../event.schemas'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -164,10 +164,12 @@ export const CreateEventForm = ({
           {/* Note: In Edit Mode, we typically disable adding/removing tiers
               unless the backend specifically supports syncing the list.
               For now, we render it, but logic in useUpdateEvent ignores it. */}
-          <TicketTiersField />
+          {!isEditMode && <TicketTiersField />}
 
           {/* --- Actions --- */}
-          <div className="pt-6 flex items-center justify-end gap-4 border-t border-slate-800 mt-6">
+          <div
+            className={`pt-6 flex items-center justify-end gap-4 mt-6 ${!isEditMode && 'border-t border-slate-800'}`}
+          >
             <Link to="/events">
               <Button
                 type="button"

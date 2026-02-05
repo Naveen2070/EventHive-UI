@@ -17,5 +17,6 @@ export interface BookingDTO {
 
 export interface CreateBookingRequest {
   eventId: number
+  ticketTierId: number
   ticketsCount: number
 }

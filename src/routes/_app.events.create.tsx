@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 
 import type { CreateEventValues } from '@/features/events/event.schemas'
@@ -16,31 +16,49 @@ function CreateEventPage() {
   const { user } = useAuthStore()
 
   const handleSubmit = (data: CreateEventValues) => {
-    // 1. Format Dates for Backend (Append seconds if missing)
-    const formattedStart =
+    // 1. Format Main Event Dates
+    const eventStart =
       data.startDate.length === 16 ? `${data.startDate}:00` : data.startDate
-    const formattedEnd =
+    const eventEnd =
       data.endDate.length === 16 ? `${data.endDate}:00` : data.endDate
 
-    // 2. Map Event Dates to Ticket Tiers
-    // The backend requires validFrom/validUntil for each tier.
-    // Since the simple create form assumes tiers share the event duration, we map them here.
+    // 2. Map Ticket Tiers with Logic
+    const formattedTiers = data.ticketTiers.map((tier) => {
+      let validFrom = eventStart
+      let validUntil = eventEnd
+
+      // Check logic: If Opt-in AND user actually selected dates
+      if (tier.enableCustomDates && tier.validFrom && tier.validUntil) {
+        validFrom =
+          tier.validFrom.length === 16 ? `${tier.validFrom}:00` : tier.validFrom
+        validUntil =
+          tier.validUntil.length === 16
+            ? `${tier.validUntil}:00`
+            : tier.validUntil
+      }
+
+      // Return clean object without the helper boolean
+      return {
+        name: tier.name,
+        price: tier.price,
+        totalAllocation: tier.totalAllocation,
+        validFrom,
+        validUntil,
+      }
+    })
+
     const payload = {
       ...data,
-      startDate: formattedStart,
-      endDate: formattedEnd,
-      ticketTiers: data.ticketTiers.map((tier) => ({
-        ...tier,
-        validFrom: formattedStart,
-        validUntil: formattedEnd,
-      })),
+      startDate: eventStart,
+      endDate: eventEnd,
+      ticketTiers: formattedTiers,
       title: data.title,
       description: data.description,
       location: data.location,
       organizerEmail: data.organizerEmail,
-      createdBy: Number(data.createdBy)
+      createdBy: Number(data.createdBy),
     } satisfies CreateEventRequest
-    
+
     createEvent(payload)
   }
 

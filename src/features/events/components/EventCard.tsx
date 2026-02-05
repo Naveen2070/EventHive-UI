@@ -35,6 +35,18 @@ export const EventCard = ({ event, isOwner }: EventCardProps) => {
   const { user } = useAuthStore()
   const isAdmin = user?.role === UserRole.ADMIN
 
+  // Calculate Total Capacity across all tiers for the progress bar
+  const totalCapacity = event.ticketTiers.reduce(
+    (sum, tier) => sum + tier.totalAllocation,
+    0,
+  )
+  const totalAvailable = event.ticketTiers.reduce(
+    (sum, tier) => sum + tier.availableAllocation,
+    0,
+  )
+  const percentAvailable =
+    totalCapacity > 0 ? (totalAvailable / totalCapacity) * 100 : 0
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case EventStatus.PUBLISHED:
@@ -75,7 +87,7 @@ export const EventCard = ({ event, isOwner }: EventCardProps) => {
             variant="secondary"
             className="bg-slate-950/80 backdrop-blur text-slate-200 border-slate-700"
           >
-            {event.price > 0 ? `$${event.price.toFixed(2)}` : 'FREE'}
+            {event.priceRange || 'Free'}
           </Badge>
         </div>
       </div>
@@ -131,17 +143,23 @@ export const EventCard = ({ event, isOwner }: EventCardProps) => {
         {/* Seat Availability Bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Availability</span>
-            <span>
-              {event.availableSeats} / {event.totalSeats}
+            <span>Ticket Availability</span>
+            <span
+              className={
+                percentAvailable < 20 ? 'text-red-400' : 'text-slate-400'
+              }
+            >
+              {percentAvailable === 0
+                ? 'Sold Out'
+                : `${Math.round(percentAvailable)}% left`}
             </span>
           </div>
           {/* Simple Progress Bar */}
           <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-600 rounded-full transition-all"
+              className={`h-full rounded-full transition-all ${percentAvailable < 20 ? 'bg-red-500' : 'bg-blue-600'}`}
               style={{
-                width: `${(event.availableSeats / event.totalSeats) * 100}%`,
+                width: `${percentAvailable}%`,
               }}
             />
           </div>
@@ -211,9 +229,10 @@ export const EventCard = ({ event, isOwner }: EventCardProps) => {
           <Link {...detailLinkProps} className="w-full">
             <Button
               size="sm"
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
+              disabled={percentAvailable === 0}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 disabled:bg-slate-800 disabled:text-slate-500"
             >
-              Book Ticket
+              {percentAvailable === 0 ? 'Sold Out' : 'Book Ticket'}
             </Button>
           </Link>
         )}
