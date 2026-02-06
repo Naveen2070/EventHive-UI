@@ -61,7 +61,7 @@ export const FeaturedEvents = () => {
                     {/* Placeholder for Event Image */}
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-slate-950/80 backdrop-blur text-white border-slate-700">
-                        {event.price === 0 ? 'Free' : `$${event.price}`}
+                        {`${event.priceRange}`}
                       </Badge>
                     </div>
                   </div>

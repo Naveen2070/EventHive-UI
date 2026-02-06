@@ -1,58 +1,89 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Scanner } from '@yudiel/react-qr-scanner'
-import { useMutation } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { api } from '@/api/axios'
+
+import type { ScanResultData } from '@/types/booking.type.ts'
+import { useCheckIn } from '@/features/organizer/hooks/useCheckIn'
 import { ScannerOverlay } from '@/features/organizer/components/ScannerOverlay'
 import { ScanResultOverlay } from '@/features/organizer/components/ScanResultOverlay'
 import { ScannerControls } from '@/features/organizer/components/ScannerControls'
+import { ScanStatus } from '@/types/enum.ts'
 
 export const Route = createFileRoute('/_app/organizer/scan')({
   component: ScannerPage,
 })
 
 function ScannerPage() {
-  const [lastScanned, setLastScanned] = useState<string | null>(null)
   const [isPaused, setIsPaused] = useState(false)
+  const [scanStatus, setScanStatus] = useState<ScanStatus>(ScanStatus.IDLE)
+  const [resultData, setResultData] = useState<ScanResultData | undefined>(
+    undefined,
+  )
 
-  const checkInMutation = useMutation({
-    mutationFn: async (reference: string) => {
-      const res = await api.post('/bookings/check-in', {
-        bookingReference: reference,
-      })
-      return res.data
-    },
-    onSuccess: (data) => toast.success(data.message),
-    onError: (error: any) =>
-      toast.error(error.response?.data?.message || 'Check-in Failed'),
-    onSettled: () => {
-      // Auto-reset after 2s
-      setTimeout(() => {
-        setLastScanned(null)
-        setIsPaused(false)
-      }, 2000)
-    },
-  })
+  const { mutate: checkIn, reset: resetMutation } = useCheckIn()
 
   const handleScan = (detectedCodes: Array<any>) => {
     if (detectedCodes.length === 0 || isPaused) return
     const rawValue = detectedCodes[0].rawValue
-    if (rawValue === lastScanned) return
+    if (!rawValue) return
 
+    // 1. Pause immediately
     setIsPaused(true)
-    setLastScanned(rawValue)
-    checkInMutation.mutate(rawValue)
+    setScanStatus(ScanStatus.PENDING)
+
+    // 2. Trigger Mutation
+    checkIn(rawValue, {
+      onSuccess: (data) => {
+        switch (data.status) {
+          case 'CHECKED_IN':
+            setScanStatus(ScanStatus.SUCCESS)
+            setResultData({
+              attendeeName: data.attendeeName || 'Guest',
+              ticketTier: data.ticketTierName || 'Standard',
+            })
+            break
+
+          case 'ALREADY_CHECKED_IN':
+            setScanStatus(ScanStatus.ALREADY_SCANNED)
+            setResultData({
+              attendeeName: data.attendeeName,
+              message: data.message || 'Ticket already scanned',
+            })
+            break
+
+          case 'EXPIRED':
+          case 'WRONG_DATE':
+          case 'INVALID_STATUS':
+          case 'NOT_AUTHORIZED':
+          case 'NOT_FOUND':
+            setScanStatus(ScanStatus.ERROR)
+            setResultData({
+              message: data.message || 'Check-in Denied',
+              attendeeName: data.attendeeName,
+            })
+            break
+
+          default:
+            setScanStatus(ScanStatus.ERROR)
+            setResultData({ message: data.message || 'Unknown Status' })
+        }
+      },
+      onError: (error: any) => {
+        setScanStatus(ScanStatus.ERROR)
+        setResultData({
+          message: error.response?.data?.message || 'Network Error',
+        })
+      },
+    })
   }
 
-  // Determine visual status for the overlay
-  const uiStatus = checkInMutation.isPending
-    ? 'pending'
-    : checkInMutation.isError
-      ? 'error'
-      : checkInMutation.isSuccess
-        ? 'success'
-        : 'idle'
+  const handleReset = () => {
+    setScanStatus(ScanStatus.IDLE)
+    setResultData(undefined)
+    resetMutation()
+    // Small delay prevents accidental double-scan immediately
+    setTimeout(() => setIsPaused(false), 300)
+  }
 
   return (
     <div className="max-w-md mx-auto space-y-6 flex flex-col items-center justify-center min-h-[80vh] px-4">
@@ -69,23 +100,19 @@ function ScannerPage() {
           styles={{ container: { width: '100%', height: '100%' } }}
         />
 
-        <ScannerOverlay isScanning={!isPaused} />
+        {/* Use Enum for IDLE check */}
+        <ScannerOverlay
+          isScanning={!isPaused && scanStatus === ScanStatus.IDLE}
+        />
 
         <ScanResultOverlay
-          status={uiStatus}
-          attendeeName={checkInMutation.data?.attendeeName}
-          errorMessage={checkInMutation.error?.response?.data?.message}
+          status={scanStatus}
+          data={resultData}
+          onReset={handleReset}
         />
       </div>
 
-      <ScannerControls
-        onReset={() => {
-          setIsPaused(false)
-          setLastScanned(null)
-          checkInMutation.reset()
-        }}
-        isReady={!isPaused}
-      />
+      <ScannerControls onReset={handleReset} isReady={!isPaused} />
     </div>
   )
 }

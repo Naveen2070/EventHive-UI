@@ -22,6 +22,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { BookingStatus } from '@/types/enum'
+import { Badge } from '@/components/ui/badge'
 import {
   Tooltip,
   TooltipContent,
@@ -38,16 +39,13 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
   const [showReceipt, setShowReceipt] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  // 1. Optimized Date Logic using useMemo
+  // 1. Optimized Date Logic
   const { isExpired, isOngoing, dateDisplay } = useMemo(() => {
     const now = new Date()
     const startDate = new Date(booking.eventDate)
     const endDate = new Date(booking.eventEndDate)
 
-    // Expired ONLY if now is after the END date
     const isExpiredEvent = now > endDate
-
-    // Ongoing if we are between start and end
     const isOngoingEvent = now >= startDate && now <= endDate
 
     return {
@@ -108,11 +106,21 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
               </Tooltip>
             </TooltipProvider>
 
-            <div
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${styles.badge}`}
-            >
-              <StatusIcon className="h-3.5 w-3.5" />
-              <span>{styles.label}</span>
+            <div className="flex items-center gap-2">
+              {/* Tier Badge */}
+              <Badge
+                variant="secondary"
+                className="bg-slate-900 text-blue-400 border-slate-800 text-[10px] uppercase tracking-wide"
+              >
+                {booking.ticketTierName || 'Ticket'}
+              </Badge>
+
+              <div
+                className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium border ${styles.badge}`}
+              >
+                <StatusIcon className="h-3.5 w-3.5" />
+                <span>{styles.label}</span>
+              </div>
             </div>
           </div>
 
@@ -169,8 +177,10 @@ export const TicketCard = ({ booking }: TicketCardProps) => {
               <div className="flex items-center gap-2 text-slate-200 font-medium">
                 <Ticket className="h-4 w-4 text-slate-400" />
                 <span>
-                  {booking.ticketsCount}{' '}
-                  <span className="text-slate-500 text-xs ml-1">x General</span>
+                  {booking.ticketsCount}
+                  <span className="text-slate-500 text-xs ml-1">
+                    x {booking.ticketTierName || 'Standard'}
+                  </span>
                 </span>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import { Download, Share2, Ticket } from 'lucide-react'
 import { format } from 'date-fns'
-import QRCode from 'react-qr-code' 
+import QRCode from 'react-qr-code'
 import type { BookingDTO } from '@/types/booking.type.ts'
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 
 interface TicketQRDialogProps {
   booking: BookingDTO
@@ -39,7 +40,7 @@ export const TicketQRDialog = ({
           </DialogHeader>
         </div>
 
-        {/* 🟢 QR Code Section */}
+        {/* QR Code Section */}
         <div className="p-8 flex flex-col items-center justify-center bg-white text-slate-900 space-y-6">
           <div className="relative group cursor-pointer">
             {/* The Real QR Code */}
@@ -60,13 +61,26 @@ export const TicketQRDialog = ({
             </div>
           </div>
 
-          <div className="text-center space-y-1">
+          <div className="text-center space-y-2">
             <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
               Scan at entry
             </p>
-            <h3 className="text-2xl font-black tracking-tighter text-slate-900">
-              ADMIT {booking.ticketsCount}
-            </h3>
+            <div>
+              <h3 className="text-2xl font-black tracking-tighter text-slate-900 leading-none">
+                ADMIT {booking.ticketsCount}
+              </h3>
+              {/* Tier Name Display */}
+              <span className="text-sm font-medium text-slate-500 uppercase tracking-wide">
+                {booking.ticketTierName || 'Standard'} TICKET
+              </span>
+            </div>
+
+            {/* Status Badge inside QR view */}
+            {booking.status === 'CHECKED_IN' && (
+              <Badge className="bg-blue-100 text-blue-600 border-blue-200 mt-2">
+                ALREADY CHECKED IN
+              </Badge>
+            )}
           </div>
         </div>
 

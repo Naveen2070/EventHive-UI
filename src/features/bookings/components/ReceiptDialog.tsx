@@ -1,5 +1,14 @@
 import { format } from 'date-fns'
-import { CheckCircle2, Download, Printer, Receipt } from 'lucide-react'
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Download,
+  Printer,
+  Receipt,
+  RefreshCcw,
+  XCircle,
+} from 'lucide-react'
 import type { BookingDTO } from '@/types/booking.type'
 import {
   Dialog,
@@ -23,8 +32,53 @@ export const ReceiptDialog = ({
   isOpen,
   onOpenChange,
 }: ReceiptDialogProps) => {
-
   const unitPrice = booking.totalPrice / booking.ticketsCount
+
+  // Helper to determine status styling and text
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'CONFIRMED':
+      case 'CHECKED_IN':
+        return {
+          icon: CheckCircle2,
+          label: 'Payment Successful',
+          className: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500',
+        }
+      case 'PENDING_PAYMENT':
+        return {
+          icon: Clock,
+          label: 'Payment Pending',
+          className: 'bg-amber-500/10 border-amber-500/20 text-amber-500',
+        }
+      case 'CANCELLED':
+        return {
+          icon: XCircle,
+          label: 'Booking Cancelled',
+          className: 'bg-red-500/10 border-red-500/20 text-red-500',
+        }
+      case 'REFUNDED':
+        return {
+          icon: RefreshCcw,
+          label: 'Payment Refunded',
+          className: 'bg-blue-500/10 border-blue-500/20 text-blue-500',
+        }
+      case 'EXPIRED':
+        return {
+          icon: AlertCircle,
+          label: 'Ticket Expired',
+          className: 'bg-slate-800 border-slate-700 text-slate-400',
+        }
+      default:
+        return {
+          icon: AlertCircle,
+          label: status,
+          className: 'bg-slate-800 border-slate-700 text-slate-400',
+        }
+    }
+  }
+
+  const statusConfig = getStatusConfig(booking.status)
+  const StatusIcon = statusConfig.icon
 
   const handlePrint = () => {
     window.print()
@@ -46,15 +100,17 @@ export const ReceiptDialog = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Status Banner */}
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex items-center gap-3">
-            <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+          {/* Dynamic Status Banner */}
+          <div
+            className={`border rounded-lg p-3 flex items-center gap-3 ${statusConfig.className}`}
+          >
+            <StatusIcon className="h-5 w-5" />
             <div>
-              <p className="text-sm font-medium text-emerald-500">
-                Payment Successful
-              </p>
-              <p className="text-xs text-emerald-500/70">
-                {format(new Date(booking.bookedAt || new Date()), 'PPP p')}
+              <p className="text-sm font-medium">{statusConfig.label}</p>
+              <p className="text-xs opacity-70">
+                {booking.bookedAt
+                  ? format(new Date(booking.bookedAt), 'PPP p')
+                  : format(new Date(), 'PPP p')}
               </p>
             </div>
           </div>
@@ -74,7 +130,10 @@ export const ReceiptDialog = ({
           {/* Line Items */}
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-slate-300">
-              <span>General Admission (x{booking.ticketsCount})</span>
+              {/* Dynamic Ticket Tier Name */}
+              <span>
+                {booking.ticketTierName || 'Ticket'} (x{booking.ticketsCount})
+              </span>
               <span>${booking.totalPrice.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-slate-500 text-xs">
@@ -97,12 +156,12 @@ export const ReceiptDialog = ({
         <DialogFooter className="flex-row gap-2 sm:justify-end">
           <Button
             variant="outline"
-            className="flex-1 sm:flex-none border-slate-800"
+            className="flex-1 sm:flex-none border-slate-800 hover:bg-slate-900 text-slate-300"
             onClick={handlePrint}
           >
             <Printer className="mr-2 h-4 w-4" /> Print
           </Button>
-          <Button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500">
+          <Button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white">
             <Download className="mr-2 h-4 w-4" /> PDF
           </Button>
         </DialogFooter>
