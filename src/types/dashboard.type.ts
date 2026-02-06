@@ -12,6 +12,7 @@ export interface RecentSale {
   id: number
   eventName: string
   customerName: string
+  tierName:string
   tickets: number
   amount: number
   date: string
