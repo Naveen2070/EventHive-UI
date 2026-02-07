@@ -1,8 +1,4 @@
-import {
-  Link,
-  useLocation,
-  useNavigate
-} from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import {
   CalendarDays,
   LayoutDashboard,
@@ -13,9 +9,9 @@ import {
   Settings,
   Ticket,
 } from 'lucide-react'
-import {  useState } from 'react'
-import type {LinkProps} from '@tanstack/react-router';
-import type {ElementType } from 'react';
+import { useState } from 'react'
+import type { LinkProps } from '@tanstack/react-router'
+import type { ElementType } from 'react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
 import { UserRole } from '@/types/enum'
@@ -77,6 +73,13 @@ export const Sidebar = () => {
     logout()
     await navigate({ to: '/login' })
   }
+
+  // Helper for navigation to ensure mobile menu closes
+  const handleNavigation = async(path: string) => {
+    if (open) setOpen(false)
+    await navigate({ to: path })
+  }
+
   const NavList = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -138,7 +141,7 @@ export const Sidebar = () => {
               {user?.username}
             </p>
             <p className="text-xs text-slate-500 truncate capitalize">
-              {user?.role.toLowerCase()}
+              {user?.role.toLowerCase().replace('_', ' ')}
             </p>
           </div>
         </div>
@@ -149,6 +152,7 @@ export const Sidebar = () => {
           <Button
             variant="ghost"
             className="w-full justify-start text-slate-400 hover:text-white hover:bg-slate-900"
+            onClick={() => handleNavigation('/settings')}
           >
             <Settings className="mr-2 h-4 w-4" /> Settings
           </Button>
