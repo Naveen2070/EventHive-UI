@@ -8,9 +8,9 @@ import { eventKeys } from '@/features/events/events.keys'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton.tsx'
 
 export const FeaturedEvents = () => {
-  // Fetch only first page
   const { data, isLoading } = useQuery({
     queryKey: eventKeys.public({ status: 'PUBLISHED' }, 0),
     queryFn: () => eventsApi.getAll(0, 3, { status: 'PUBLISHED' }),
@@ -18,9 +18,38 @@ export const FeaturedEvents = () => {
 
   if (isLoading)
     return (
-      <div className="text-center text-slate-500 py-10">
-        Loading upcoming events...
-      </div>
+      <section className="py-20 px-6">
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* Header Skeleton */}
+          <div className="flex justify-between items-end">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64 bg-slate-800" />
+              <Skeleton className="h-4 w-96 bg-slate-800" />
+            </div>
+            <Skeleton className="h-10 w-24 bg-slate-800" />
+          </div>
+
+          {/* Cards Skeleton */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-full border border-slate-800 rounded-xl overflow-hidden"
+              >
+                <Skeleton className="h-48 w-full bg-slate-800" />
+                <div className="p-6 space-y-4">
+                  <Skeleton className="h-4 w-24 bg-slate-800" />
+                  <Skeleton className="h-8 w-full bg-slate-800" />
+                  <div className="flex gap-4">
+                    <Skeleton className="h-4 w-24 bg-slate-800" />
+                    <Skeleton className="h-4 w-24 bg-slate-800" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     )
 
   return (

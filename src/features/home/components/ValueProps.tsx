@@ -4,19 +4,19 @@ import { motion } from 'framer-motion'
 const features = [
   {
     icon: Zap,
-    color: 'blue',
+    className: 'bg-blue-500/10 text-blue-400',
     title: 'Instant Booking',
     desc: 'Secure your spot in seconds with our lightning-fast checkout process.',
   },
   {
     icon: ShieldCheck,
-    color: 'emerald',
+    className: 'bg-emerald-500/10 text-emerald-400',
     title: 'Secure Payments',
     desc: 'We use industry-standard encryption to ensure your data is always safe.',
   },
   {
     icon: Globe,
-    color: 'purple',
+    className: 'bg-purple-500/10 text-purple-400',
     title: 'Global Reach',
     desc: 'Find events happening in your local community or halfway across the world.',
   },
@@ -36,7 +36,8 @@ export const ValueProps = () => {
             className="space-y-4 group"
           >
             <div
-              className={`w-12 h-12 bg-${feature.color}-500/10 rounded-xl flex items-center justify-center mx-auto text-${feature.color}-400 group-hover:scale-110 transition-transform duration-300`}
+              // Use the mapped className here
+              className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 ${feature.className}`}
             >
               <feature.icon className="h-6 w-6" />
             </div>
